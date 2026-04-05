@@ -1,0 +1,110 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 88px;
+  background: var(--header-bg);
+  flex-shrink: 0;
+  z-index: 100;
+}
+
+/* Walking-person icon block (like Moscow stelae) */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logoIcon {
+  font-size: 30px;
+  color: #fff;
+  line-height: 1;
+  opacity: 0.9;
+}
+
+.logoText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  gap: 3px;
+}
+
+.logoTitle {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--header-text);
+}
+
+.logoSub {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.35em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+/* "Вы здесь" centre block */
+.kioskInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.youAreHere {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  animation: blink 2s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+.kioskName {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--header-text);
+  letter-spacing: 0.01em;
+}
+
+.kioskDistrict {
+  font-size: 11px;
+  color: var(--header-sub);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Time block */
+.timeBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.time {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--header-text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.date {
+  font-size: 11px;
+  color: var(--header-sub);
+  text-transform: capitalize;
+}

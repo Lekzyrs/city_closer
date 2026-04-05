@@ -1,0 +1,140 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  height: 42%;
+  flex-shrink: 0;
+  background: var(--surface-1);
+  border-top: 3px solid var(--accent);
+  position: relative;
+  z-index: 50;
+}
+
+/* ── Tab bar ────────────────────────────────────────────────────────────── */
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--surface-1);
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 18px 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: color 0.2s, background 0.2s;
+  position: relative;
+  min-height: 84px;
+  font-family: var(--font);
+}
+
+.tab::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 15%;
+  right: 15%;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 3px 3px 0 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.tab:hover {
+  color: var(--text-secondary);
+  background: var(--surface-2);
+}
+
+.tabActive {
+  color: var(--accent);
+}
+
+.tabActive::after {
+  opacity: 1;
+}
+
+.tabIcon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.tabLabel {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── Active route strip ─────────────────────────────────────────────────── */
+
+.routeStrip {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 32px;
+  background: var(--accent-light);
+  border-bottom: 1px solid var(--accent-mid);
+  flex-shrink: 0;
+}
+
+.routeStripIcon {
+  font-size: 22px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.routeStripInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.routeStripTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.routeStripMeta {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.routeStripClose {
+  background: #fff;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: color 0.15s, border-color 0.15s;
+  font-family: var(--font);
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.routeStripClose:hover {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+/* ── Scrollable content ─────────────────────────────────────────────────── */
+
+.content {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}

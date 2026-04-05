@@ -1,0 +1,500 @@
+/* ── Shared tab content ─────────────────────────────────────────────────── */
+
+.tabContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  overflow-y: auto;
+  padding: 20px 28px 36px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0 0 0 / 0.12) transparent;
+  background: var(--surface-2);
+}
+
+.hint {
+  font-size: 15px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 36px 20px;
+  line-height: 1.6;
+}
+
+.sectionLabel {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 4px 0 2px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ── Search ─────────────────────────────────────────────────────────────── */
+
+.searchInputWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 18px;
+  font-size: 22px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  background: var(--surface-1);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 52px;
+  font-size: 17px;
+  color: var(--text-primary);
+  font-family: var(--font);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  min-height: 68px;
+  box-shadow: 0 1px 4px rgba(0 0 0 / 0.06);
+}
+
+.searchInput:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+.searchInput::placeholder {
+  color: var(--text-muted);
+}
+
+.clearBtn {
+  position: absolute;
+  right: 14px;
+  background: var(--surface-2);
+  border: none;
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 8px 10px;
+  border-radius: 8px;
+  line-height: 1;
+  transition: color 0.15s;
+  min-width: 40px;
+  min-height: 40px;
+}
+
+.clearBtn:hover {
+  color: var(--accent);
+}
+
+.resultRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface-1);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+  min-height: 76px;
+  box-shadow: 0 1px 3px rgba(0 0 0 / 0.05);
+}
+
+.resultRow:hover,
+.resultRow:active {
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(200 16 46 / 0.12);
+}
+
+.resultIcon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.resultInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.resultName {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resultSub {
+  font-size: 13px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.offlineBadge {
+  font-size: 11px;
+  background: rgba(140 150 160 / 0.12);
+  color: var(--offline);
+  border-radius: 6px;
+  padding: 3px 9px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.distanceBadge {
+  font-size: 13px;
+  color: var(--nav);
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Nearby / POI list ──────────────────────────────────────────────────── */
+
+.filterRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filterChip {
+  background: var(--surface-1);
+  border: 1.5px solid var(--border);
+  border-radius: 40px;
+  padding: 10px 20px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  font-family: var(--font);
+  font-weight: 500;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0 0 0 / 0.05);
+}
+
+.filterChip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.filterChipActive {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(200 16 46 / 0.25);
+}
+
+.poiList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.poiCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--surface-1);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 20px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+  min-height: 92px;
+  box-shadow: 0 1px 4px rgba(0 0 0 / 0.05);
+}
+
+.poiCard:hover,
+.poiCard:active {
+  border-color: var(--accent);
+  box-shadow: 0 4px 16px rgba(200 16 46 / 0.1);
+}
+
+.poiCardActive {
+  border-color: var(--accent);
+  background: rgba(200 16 46 / 0.03);
+}
+
+.poiEmoji {
+  font-size: 34px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.poiBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.poiName {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.poiDesc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.poiMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.categoryTag {
+  font-size: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 2px 8px;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.distance {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--nav);
+}
+
+/* ── Route builder ──────────────────────────────────────────────────────── */
+
+.routeStartBlock {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--accent-light);
+  border: 1.5px solid var(--accent-mid);
+  border-radius: 14px;
+  padding: 18px 20px;
+}
+
+.routeStepDot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-light);
+}
+
+.routeStepInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.routeStepLabel {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.routeStepName {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.routeStepSub {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.routeDivider {
+  height: 1px;
+  background: var(--border);
+  margin: 2px 0;
+}
+
+.kioskPickerList {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.kioskPickerItem {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface-1);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+  width: 100%;
+  min-height: 80px;
+  box-shadow: 0 1px 3px rgba(0 0 0 / 0.05);
+}
+
+.kioskPickerItem:hover {
+  border-color: var(--accent);
+}
+
+.kioskPickerItemSelected {
+  border-color: var(--accent);
+  background: rgba(200 16 46 / 0.03);
+}
+
+.kioskPickerItemOffline {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.kioskPickerCheck {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.orderBadge {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.unchecked {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: block;
+}
+
+.kioskPickerInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+
+.kioskPickerName {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.kioskPickerSub {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.kioskPickerIcon {
+  font-size: 18px;
+  color: var(--nav);
+  opacity: 0.5;
+}
+
+.routeActions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.buildBtn {
+  width: 100%;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  border: none;
+  border-radius: 14px;
+  padding: 20px;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s;
+  min-height: 68px;
+  box-shadow: 0 4px 16px rgba(200 16 46 / 0.3);
+}
+
+.buildBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.buildBtn:not(:disabled):hover {
+  opacity: 0.92;
+  box-shadow: 0 6px 20px rgba(200 16 46 / 0.4);
+}
+
+.buildBtn:not(:disabled):active {
+  transform: scale(0.98);
+}
+
+.clearBtn2 {
+  width: 100%;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font);
+  font-size: 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  min-height: 60px;
+}
+
+.clearBtn2:hover {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.routeNote {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.6;
+  margin-top: 4px;
+}
