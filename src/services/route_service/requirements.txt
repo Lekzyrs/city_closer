@@ -1,0 +1,9 @@
+osmnx
+networkx
+shapely
+geopandas
+numpy
+fastapi
+uvicorn
+pydantic 
+pydantic-settings
