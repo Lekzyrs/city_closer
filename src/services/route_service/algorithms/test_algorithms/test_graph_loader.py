@@ -5,9 +5,9 @@ import time
 project_root = r'e:\Dev\misis\MRPO_LABS\city_closer'
 sys.path.insert(0, project_root)
 sys.path.insert(0, os.path.join(project_root, 'service'))
-sys.path.insert(0, os.path.join(project_root, 'python_backend'))
+sys.path.insert(0, os.path.join(project_root, 'route_service'))
 
-from python_backend.service.graph_loader import MoscowGraphLoader
+from route_service.service.graph_loader import MoscowGraphLoader
 
 
 print("=== Testing Graph Loader ===\n")
