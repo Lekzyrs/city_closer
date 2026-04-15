@@ -36,6 +36,3 @@ Thumbs.db
 # TypeScript
 *.tsbuildinfo
 
-.claude/
-CLAUDE.md
-.gitignore
