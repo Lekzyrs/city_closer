@@ -13,12 +13,12 @@ interface NearbyTabProps {
 
 const FILTERS: { value: FilterCategory; label: string }[] = [
   { value: 'all', label: 'Всё' },
-  { value: 'attraction', label: '🏛 Памятники' },
-  { value: 'museum', label: '🎨 Музеи' },
-  { value: 'park', label: '🌳 Парки' },
-  { value: 'restaurant', label: '🍽 Еда' },
-  { value: 'transport', label: '🚇 Транспорт' },
-  { value: 'shopping', label: '🛍 Шопинг' },
+  { value: 'attraction', label: 'Памятники' },
+  { value: 'museum', label: 'Музеи' },
+  { value: 'park', label: 'Парки' },
+  { value: 'restaurant', label: 'Еда' },
+  { value: 'transport', label: 'Транспорт' },
+  { value: 'shopping', label: 'Шопинг' },
 ]
 
 export function NearbyTab({ pois, selectedPOIId, onPOISelect }: NearbyTabProps) {

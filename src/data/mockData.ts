@@ -103,11 +103,11 @@ export const CATEGORY_LABELS: Record<POI['category'], string> = {
 }
 
 export const CATEGORY_ICONS: Record<POI['category'], string> = {
-  attraction: '🏛',
-  museum: '🎨',
-  park: '🌳',
-  restaurant: '🍽',
-  transport: '🚇',
-  shopping: '🛍',
-  hotel: '🏨',
+  attraction: 'Д',
+  museum: 'М',
+  park: 'П',
+  restaurant: 'Р',
+  transport: 'Т',
+  shopping: 'Ш',
+  hotel: 'О',
 }

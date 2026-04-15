@@ -35,7 +35,12 @@ export function SearchTab({ kiosks, pois, onKioskSelect, onPOISelect, currentKio
   return (
     <div className={styles.tabContent}>
       <div className={styles.searchInputWrap}>
-        <span className={styles.searchIcon}>⌕</span>
+        <span className={styles.searchIcon}>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
+            <circle cx="9" cy="9" r="5.5"/>
+            <line x1="13.5" y1="13.5" x2="17" y2="17"/>
+          </svg>
+        </span>
         <input
           className={styles.searchInput}
           type="text"
@@ -45,9 +50,7 @@ export function SearchTab({ kiosks, pois, onKioskSelect, onPOISelect, currentKio
           autoComplete="off"
         />
         {query && (
-          <button className={styles.clearBtn} onClick={() => setQuery('')}>
-            ✕
-          </button>
+          <button className={styles.clearBtn} onClick={() => setQuery('')}>×</button>
         )}
       </div>
 
@@ -64,7 +67,12 @@ export function SearchTab({ kiosks, pois, onKioskSelect, onPOISelect, currentKio
           <div className={styles.sectionLabel}>Киоски</div>
           {filteredKiosks.map((k) => (
             <button key={k.id} className={styles.resultRow} onClick={() => onKioskSelect(k.id)}>
-              <span className={styles.resultIcon}>◈</span>
+              <span className={styles.resultIcon}>
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="2.5" y="2.5" width="13" height="13" rx="2.5"/>
+                  <circle cx="9" cy="9" r="2.5"/>
+                </svg>
+              </span>
               <div className={styles.resultInfo}>
                 <span className={styles.resultName}>{k.name}</span>
                 <span className={styles.resultSub}>{k.district}</span>
@@ -80,7 +88,12 @@ export function SearchTab({ kiosks, pois, onKioskSelect, onPOISelect, currentKio
           <div className={styles.sectionLabel}>Места</div>
           {filteredPOIs.map((p) => (
             <button key={p.id} className={styles.resultRow} onClick={() => onPOISelect(p.id)}>
-              <span className={styles.resultIcon}>📍</span>
+              <span className={styles.resultIcon}>
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="9" cy="7" r="2.5"/>
+                  <path d="M9 1.5C6.1 1.5 3.75 3.85 3.75 6.75c0 4.2 5.25 9.75 5.25 9.75s5.25-5.55 5.25-9.75C14.25 3.85 11.9 1.5 9 1.5z"/>
+                </svg>
+              </span>
               <div className={styles.resultInfo}>
                 <span className={styles.resultName}>{p.name}</span>
                 <span className={styles.resultSub}>{p.description}</span>
