@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
 /* ── Design tokens — Moscow wayfinding style ────────────────────────────── */
 
 :root {
@@ -30,7 +32,8 @@
   --header-text:   #FFFFFF;
   --header-sub:    rgba(255 255 255 / 0.55);
 
-  --font: 'Inter', 'SF Pro Display', system-ui, sans-serif;
+  --font: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
 }
 
 /* ── Reset ──────────────────────────────────────────────────────────────── */
@@ -107,9 +110,20 @@ body {
 }
 
 .poi-marker {
-  font-size: 28px;
-  line-height: 1;
-  filter: drop-shadow(0 2px 4px rgba(0 0 0 / 0.3));
+  width: 26px;
+  height: 26px;
+  background: var(--nav);
+  color: #fff;
+  font-family: var(--font);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 8px rgba(0 0 0 / 0.35);
+  letter-spacing: 0;
 }
 
 /* ── Leaflet popup ──────────────────────────────────────────────────────── */

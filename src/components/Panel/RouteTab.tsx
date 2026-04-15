@@ -76,7 +76,7 @@ export function RouteTab({
                 <span className={styles.kioskPickerName}>{k.name}</span>
                 <span className={styles.kioskPickerSub}>{k.district}{!k.isOnline ? ' · офлайн' : ''}</span>
               </div>
-              <span className={styles.kioskPickerIcon}>◈</span>
+              <span className={styles.kioskPickerIcon}>›</span>
             </button>
           )
         })}
@@ -98,9 +98,7 @@ export function RouteTab({
         )}
       </div>
 
-      <p className={styles.routeNote}>
-        Маршруты рассчитываются алгоритмом Python-сервиса по данным OpenStreetMap
-      </p>
+      <p className={styles.routeNote}>Данные: OpenStreetMap</p>
     </div>
   )
 }
