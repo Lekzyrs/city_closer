@@ -21,25 +21,27 @@ func NewRouter(
 	r.Use(chimw.Logger)
 	r.Use(chimw.Recoverer)
 
-	r.Post("/api/auth/login", handlers.DummyLoginHandler(jm, pool))
+	r.Route("/api/v1", func(r chi.Router) {
+		r.Post("/auth/login", handlers.DummyLoginHandler(jm, pool))
 
-	// public
-	r.Get("/api/points", handlers.GetPointsHandler(pool, pointsCache))
-	r.Get("/api/kiosks", handlers.GetKioskHandler(pool, kiosksCache))
-	r.Get("/api/kiosks/{id}", handlers.GetKioskByIDHandler(pool, kiosksCache))
+		// public
+		r.Get("/points", handlers.GetPointsHandler(pool, pointsCache))
+		r.Get("/kiosks", handlers.GetKioskHandler(pool, kiosksCache))
+		r.Get("/kiosks/{id}", handlers.GetKioskByIDHandler(pool, kiosksCache))
 
-	// admin only
-	r.Group(func(r chi.Router) {
-		r.Use(auth.AuthMiddleware(jm))
-		r.Use(auth.RequireRole("admin"))
+		// admin only
+		r.Group(func(r chi.Router) {
+			r.Use(auth.AuthMiddleware(jm))
+			r.Use(auth.RequireRole("admin"))
 
-		r.Post("/api/points", handlers.CreatePointHandler(pool, pointsCache))
-		r.Put("/api/points/{id}", handlers.UpdatePointHandler(pool, pointsCache))
-		r.Delete("/api/points/{id}", handlers.DeletePointHandler(pool, pointsCache))
+			r.Post("/points", handlers.CreatePointHandler(pool, pointsCache))
+			r.Put("/points/{id}", handlers.UpdatePointHandler(pool, pointsCache))
+			r.Delete("/points/{id}", handlers.DeletePointHandler(pool, pointsCache))
 
-		r.Post("/api/kiosks", handlers.CreateKioskHandler(pool, kiosksCache))
-		r.Put("/api/kiosks/{id}", handlers.UpdateKioskHandler(pool, kiosksCache))
-		r.Delete("/api/kiosks/{id}", handlers.DeleteKioskHandler(pool, kiosksCache))
+			r.Post("/kiosks", handlers.CreateKioskHandler(pool, kiosksCache))
+			r.Put("/kiosks/{id}", handlers.UpdateKioskHandler(pool, kiosksCache))
+			r.Delete("/kiosks/{id}", handlers.DeleteKioskHandler(pool, kiosksCache))
+		})
 	})
 
 	return r

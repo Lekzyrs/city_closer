@@ -3,17 +3,14 @@ from typing import List, Optional
 from enum import Enum
 
 
-class RoutingRequest(BaseModel):
-    """Модель запроса на построение маршрута"""
-    ids: List[int] = Field(..., min_items=2,
-                           description="Массив ID киосков (OSM node IDs)")
+class Waypoint(BaseModel):
+    lat: float
+    lng: float
 
-    @validator('ids')
-    def check_unique_ids(cls, v):
-        """Проверяем, что ID уникальны (опционально)"""
-        if len(v) != len(set(v)):
-            pass
-        return v
+
+class RoutingRequest(BaseModel):
+    waypoints: List[Waypoint] = Field(..., min_items=2,
+                                      description="Список точек маршрута [{lat, lng}]")
 
 
 class NetworkType(str, Enum):

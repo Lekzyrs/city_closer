@@ -21,6 +21,7 @@ from contextlib import asynccontextmanager
 
 import osmnx as ox
 import networkx as nx
+import numpy as np
 
 from schemas import RoutingRequest, RouteResponse, ErrorResponse, NetworkType
 from algorithms.base.a_star import AStarRouter
@@ -36,6 +37,8 @@ logger = logging.getLogger(__name__)
 GRAPH = None
 COORDINATES = None
 ROUTER = None
+NODES_ARRAY = None   # numpy (N,2) array of [lat, lng] for nearest-node lookup
+NODE_IDS = None      # list of node IDs matching NODES_ARRAY rows
 GRAPH_INFO = {
     'nodes': 0,
     'edges': 0,
@@ -44,10 +47,17 @@ GRAPH_INFO = {
 ALGORITHM_NAME = "dijkstra"
 
 
+def find_nearest_node(lat: float, lng: float) -> int:
+    """Snap lat/lng to nearest OSM node using vectorized numpy search."""
+    diffs = NODES_ARRAY - np.array([lat, lng])
+    idx = int(np.argmin((diffs * diffs).sum(axis=1)))
+    return NODE_IDS[idx]
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Управление жизненным циклом приложения"""
-    global GRAPH, COORDINATES, ROUTER, GRAPH_INFO
+    global GRAPH, COORDINATES, ROUTER, GRAPH_INFO, NODES_ARRAY, NODE_IDS
 
     logger.info("="*50)
     logger.info("Starting Moscow Routing API")
@@ -64,6 +74,9 @@ async def lifespan(app: FastAPI):
         GRAPH_INFO['edges'] = sum(len(neighbors)
                                   for neighbors in GRAPH.values())
         GRAPH_INFO['network_type'] = 'drive'
+
+        NODE_IDS = list(COORDINATES.keys())
+        NODES_ARRAY = np.array([[COORDINATES[n][0], COORDINATES[n][1]] for n in NODE_IDS])
 
         logger.info(
             f"✅ Graph loaded: {GRAPH_INFO['nodes']} nodes, {GRAPH_INFO['edges']} edges")
@@ -259,11 +272,11 @@ async def get_node_info(node_id: int):
 
 @app.post("/routing/v1/route")
 async def get_route(request: RoutingRequest):
-    """Построение маршрута по массиву ID киосков"""
+    """Построение маршрута по массиву координат [{lat, lng}]"""
     import time
     start_time = time.time()
 
-    logger.info(f"Route request: {len(request.ids)} waypoints")
+    logger.info(f"Route request: {len(request.waypoints)} waypoints")
 
     if GRAPH is None:
         raise HTTPException(status_code=503, detail="Graph not loaded yet")
@@ -272,13 +285,19 @@ async def get_route(request: RoutingRequest):
         raise HTTPException(status_code=503, detail="Router not initialized")
 
     try:
-        geojson, total_distance = build_geojson_route(request.ids)
+        node_ids = [find_nearest_node(wp.lat, wp.lng) for wp in request.waypoints]
+        logger.info(f"Snapped waypoints to OSM nodes: {node_ids}")
 
+        geojson, total_distance = build_geojson_route(node_ids)
+
+        estimated_time = round(total_distance / 83.3)  # 5 km/h in m/min
+        geojson['properties']['estimated_time_minutes'] = estimated_time
         geojson['properties']['processing_time_ms'] = round(
             (time.time() - start_time) * 1000, 2)
 
         logger.info(
-            f"Route built: {total_distance:.2f}m in {geojson['properties']['processing_time_ms']}ms")
+            f"Route built: {total_distance:.2f}m, ~{estimated_time}min, "
+            f"in {geojson['properties']['processing_time_ms']}ms")
 
         return JSONResponse(content=geojson, status_code=200)
 
