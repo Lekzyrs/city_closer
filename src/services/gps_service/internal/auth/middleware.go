@@ -14,21 +14,27 @@ func AuthMiddleware(JWTManager *JWTManager) func(http.Handler) http.Handler {
 				response.WriteError(w, http.StatusUnauthorized, "invalid authorization header")
 				return
 			}
-			if !strings.HasPrefix(authHeader, "Bearer ") {
+			parts := strings.SplitN(authHeader, " ", 2)
+			if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
 				response.WriteError(w, http.StatusUnauthorized, "invalid authorization header")
 				return
 			}
-			tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+
+			tokenString := parts[1]
 			if tokenString == "" {
 				response.WriteError(w, http.StatusUnauthorized, "missing token")
 				return
 			}
-			claims, err := JWTManager.ParseToken(tokenString)
+			claims, err := JWTManager.VerifyAccessToken(tokenString)
 			if err != nil {
+				if strings.Contains(err.Error(), "expired") {
+					response.WriteError(w, http.StatusUnauthorized, "token expired")
+					return
+				}
 				response.WriteError(w, http.StatusUnauthorized, "invalid token")
 				return
 			}
-			ctx := WithUserRole(r.Context(), claims.UserID, claims.Role)
+			ctx := WithUser(r.Context(), claims)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
@@ -37,18 +43,18 @@ func AuthMiddleware(JWTManager *JWTManager) func(http.Handler) http.Handler {
 func RequireRole(role string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			currentRole, ok := GetRoleFromContext(r.Context())
+			user, ok := GetUserFromContext(r.Context())
 			if !ok {
-				response.WriteError(w, http.StatusUnauthorized, "cant auth role")
+				response.WriteError(w, http.StatusUnauthorized, "unauthorized")
 				return
 			}
-			if currentRole != role {
-				response.WriteError(w, http.StatusForbidden, "dont have rights")
-				return
 
+			if user.Role != role {
+				response.WriteError(w, http.StatusForbidden, "forbidden")
+				return
 			}
+
 			next.ServeHTTP(w, r)
-
 		})
 	}
 }

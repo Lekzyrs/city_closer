@@ -13,13 +13,53 @@ services:
       test: ["CMD-SHELL", "pg_isready -U postgres -d gps_service"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
     restart: unless-stopped
 
   redis:
     image: redis:7
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  migrate:
+    image: migrate/migrate
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./migrations:/migrations
+    command:
+      [
+        "-path", "/migrations",
+        "-database", "postgres://postgres:Xoxland1337@postgres:5432/gps_service?sslmode=disable",
+        "up"
+      ]
+    restart: "no"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SERVER_PORT: ":8080"
+      DATABASE_URL: "postgres://postgres:Xoxland1337@postgres:5432/gps_service?sslmode=disable"
+      REDIS_ADDR: "redis:6379"
+      JWT_SECRET: "GPS_SERVICE_TEST_SECRET"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
     restart: unless-stopped
 
 volumes:

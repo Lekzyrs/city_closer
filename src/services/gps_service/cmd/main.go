@@ -28,7 +28,11 @@ func main() {
 	}
 	defer pool.Close()
 
-	rdb := cache.NewRedisClient("localhost:6379")
+	redisAddr := os.Getenv("REDIS_ADDR")
+	if redisAddr == "" {
+		redisAddr = "redis:6379"
+	}
+	rdb := cache.NewRedisClient(redisAddr)
 	ctx := context.Background()
 	if err := rdb.Ping(ctx).Err(); err != nil {
 		log.Fatalf("failed to connect redis: %v", err)
@@ -37,7 +41,7 @@ func main() {
 	pointsCache := cache.NewPointsCache(rdb)
 	kiosksCache := cache.NewKioskCache(rdb)
 
-	jm := auth.NewJWTManager(cfg.JwtSecret)
+	jm := auth.NewJWTManager(cfg.JwtSecret, 15*time.Minute)
 	r := router.NewRouter(jm, pool, pointsCache, kiosksCache)
 
 	srv := &http.Server{
