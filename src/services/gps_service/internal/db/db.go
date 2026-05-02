@@ -80,10 +80,10 @@ func GetPointsNearby(ctx context.Context, pool *pgxpool.Pool, lat, lng, radius f
 func Search(ctx context.Context, pool *pgxpool.Pool, name string) ([]SearchResult, error) {
 	q := "%" + name + "%"
 	rows, err := pool.Query(ctx, `
-		SELECT terminal_point_id AS id, name, 'kiosk' AS type FROM terminal_points WHERE name ILIKE $1
-	UNION
-	SELECT point_id AS id, name, 'poi' AS type FROM points WHERE name ILIKE $1
-	`, q)
+    SELECT terminal_point_id AS id, name, 'kiosk' AS type FROM terminal_points WHERE name ILIKE $1
+    UNION
+    SELECT point_id AS id, name, 'poi' AS type FROM points WHERE name ILIKE $1
+    ORDER BY name LIMIT 50`, q)
 	if err != nil {
 		return nil, err
 	}
