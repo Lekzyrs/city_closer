@@ -17,10 +17,8 @@
 }
 
 .logoIcon {
-  font-size: 30px;
-  color: #fff;
-  line-height: 1;
-  opacity: 0.9;
+  flex-shrink: 0;
+  display: block;
 }
 
 .logoText {
@@ -97,9 +95,10 @@
 
 .time {
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--header-text);
-  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
+  letter-spacing: 0.03em;
   line-height: 1;
 }
 

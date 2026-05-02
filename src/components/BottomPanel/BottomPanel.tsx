@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import type { Kiosk, POI, Route, RoutePoint } from '../../types'
 import { NearbyTab } from '../Panel/NearbyTab'
 import { RouteTab } from '../Panel/RouteTab'
@@ -21,10 +22,31 @@ interface BottomPanelProps {
   isBuilding: boolean
 }
 
-const TABS: { id: Tab; label: string; icon: string }[] = [
-  { id: 'nearby', label: 'Рядом', icon: '◉' },
-  { id: 'route', label: 'Маршрут', icon: '⇢' },
-  { id: 'search', label: 'Поиск', icon: '⌕' },
+const NearbyIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <circle cx="9" cy="7.5" r="2.5"/>
+    <path d="M9 1.5C6.1 1.5 3.75 3.85 3.75 6.75c0 4.2 5.25 9.75 5.25 9.75s5.25-5.55 5.25-9.75C14.25 3.85 11.9 1.5 9 1.5z"/>
+  </svg>
+)
+const RouteIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <circle cx="3.5" cy="9" r="2"/>
+    <circle cx="14.5" cy="9" r="2"/>
+    <line x1="5.5" y1="9" x2="12.5" y2="9"/>
+    <polyline points="10,6.5 13,9 10,11.5"/>
+  </svg>
+)
+const SearchIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
+    <circle cx="8.5" cy="8.5" r="5"/>
+    <line x1="12.5" y1="12.5" x2="16" y2="16"/>
+  </svg>
+)
+
+const TABS: { id: Tab; label: string; icon: ReactNode }[] = [
+  { id: 'nearby', label: 'Рядом', icon: <NearbyIcon /> },
+  { id: 'route', label: 'Маршрут', icon: <RouteIcon /> },
+  { id: 'search', label: 'Поиск', icon: <SearchIcon /> },
 ]
 
 export function BottomPanel({
@@ -60,7 +82,11 @@ export function BottomPanel({
       {/* Active route strip */}
       {activeRoute && (
         <div className={styles.routeStrip}>
-          <span className={styles.routeStripIcon}>⇢</span>
+          <span className={styles.routeStripIcon}>
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="2.5" cy="8" r="1.5"/><circle cx="13.5" cy="8" r="1.5"/><line x1="4" y1="8" x2="12" y2="8"/><polyline points="9.5,5.5 12,8 9.5,10.5"/>
+            </svg>
+          </span>
           <div className={styles.routeStripInfo}>
             <span className={styles.routeStripTitle}>Маршрут активен</span>
             <span className={styles.routeStripMeta}>
@@ -69,7 +95,7 @@ export function BottomPanel({
               {activeRoute.estimatedTime > 0 ? ` · ~${activeRoute.estimatedTime} мин` : ' · расчёт...'}
             </span>
           </div>
-          <button className={styles.routeStripClose} onClick={onClearRoute}>✕</button>
+          <button className={styles.routeStripClose} onClick={onClearRoute}>×</button>
         </div>
       )}
 

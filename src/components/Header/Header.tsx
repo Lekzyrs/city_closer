@@ -20,10 +20,14 @@ export function Header({ kioskName, district }: HeaderProps) {
   return (
     <header className={styles.header}>
       <div className={styles.logo}>
-        <span className={styles.logoIcon}>◈</span>
+        <svg className={styles.logoIcon} width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <rect width="32" height="32" rx="5" fill="#C8102E"/>
+          <circle cx="16" cy="10.5" r="2.2" fill="white"/>
+          <rect x="14" y="15" width="4" height="8.5" rx="2" fill="white"/>
+        </svg>
         <div className={styles.logoText}>
-          <span className={styles.logoTitle}>CITY</span>
-          <span className={styles.logoSub}>KIOSK</span>
+          <span className={styles.logoTitle}>МОСКВА</span>
+          <span className={styles.logoSub}>НАВИГАЦИЯ</span>
         </div>
       </div>
 

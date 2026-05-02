@@ -58,8 +58,11 @@
 }
 
 .tabIcon {
-  font-size: 18px;
-  line-height: 1;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .tabLabel {
@@ -82,7 +85,11 @@
 }
 
 .routeStripIcon {
-  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--accent);
   flex-shrink: 0;
 }

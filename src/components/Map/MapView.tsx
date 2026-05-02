@@ -129,7 +129,7 @@ export function MapView({
           <Marker
             key={poi.id}
             position={[poi.position.lat, poi.position.lng]}
-            icon={poiIcon(categoryIcons[poi.category] ?? '📍')}
+            icon={poiIcon(categoryIcons[poi.category] ?? '?')}
             eventHandlers={{ click: () => onPOIClick(poi.id) }}
           >
             <Popup className={styles.popup}>
