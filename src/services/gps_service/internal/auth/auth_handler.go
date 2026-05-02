@@ -3,6 +3,7 @@ package auth
 import (
 	"encoding/json"
 	"gps_service/internal/response"
+	"mime"
 	"net/http"
 	"time"
 )
@@ -37,7 +38,7 @@ func RefreshHandler(authService *AuthService) http.HandlerFunc {
 			HttpOnly: true,
 			Secure:   true,
 			SameSite: http.SameSiteStrictMode,
-			Path:     "/api/auth/refresh",
+			Path:     "/api/v1/auth/refresh",
 			Expires:  time.Now().Add(7 * 24 * time.Hour),
 		})
 
@@ -51,7 +52,8 @@ func LoginHandler(authService *AuthService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req LoginRequest
 
-		if r.Header.Get("Content-Type") != "application/json" {
+		mediaType, _, _ := mime.ParseMediaType(r.Header.Get("Content-Type"))
+		if mediaType != "application/json" {
 			response.WriteError(w, http.StatusUnsupportedMediaType, "content type must be application/json")
 			return
 		}
@@ -77,7 +79,7 @@ func LoginHandler(authService *AuthService) http.HandlerFunc {
 			HttpOnly: true,
 			Secure:   true,
 			SameSite: http.SameSiteStrictMode,
-			Path:     "/api/auth/refresh",
+			Path:     "/api/v1/auth/refresh",
 			Expires:  time.Now().Add(7 * 24 * time.Hour),
 		})
 		w.Header().Set("Content-Type", "application/json")
@@ -96,7 +98,8 @@ type RegisterRequest struct {
 
 func RegisterHandler(authService *AuthService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Header.Get("Content-Type") != "application/json" {
+		mediaType, _, _ := mime.ParseMediaType(r.Header.Get("Content-Type"))
+		if mediaType != "application/json" {
 			response.WriteError(w, http.StatusUnsupportedMediaType, "content type must be application/json")
 			return
 		}
@@ -131,7 +134,7 @@ func RegisterHandler(authService *AuthService) http.HandlerFunc {
 			HttpOnly: true,
 			Secure:   true,
 			SameSite: http.SameSiteStrictMode,
-			Path:     "/api/auth/refresh",
+			Path:     "/api/v1/auth/refresh",
 			Expires:  time.Now().Add(7 * 24 * time.Hour),
 		})
 

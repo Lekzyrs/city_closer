@@ -6,6 +6,8 @@ import (
 	"encoding/hex"
 	"errors"
 	"gps_service/internal/models"
+	"gps_service/internal/response"
+	"log"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -66,12 +68,12 @@ func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (st
 		return "", "", err
 	}
 
-	if err := s.tokenRepo.Delete(ctx, hash); err != nil {
+	if err := s.tokenRepo.Save(ctx, newHash, user.ID, time.Now().Add(7*24*time.Hour)); err != nil {
 		return "", "", err
 	}
 
-	if err := s.tokenRepo.Save(ctx, newHash, user.ID, time.Now().Add(7*24*time.Hour)); err != nil {
-		return "", "", err
+	if err := s.tokenRepo.Delete(ctx, hash); err != nil {
+		log.Printf("failed to delete old refresh token: %v", err)
 	}
 
 	return accessToken, newRefreshToken, nil
@@ -105,11 +107,6 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (string
 }
 
 func (s *AuthService) Register(ctx context.Context, email, password string) (*models.User, string, string, error) {
-	existing, _ := s.userRepo.GetByEmail(ctx, email)
-	if existing != nil {
-		return nil, "", "", errors.New("user already exists")
-	}
-
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, "", "", err
@@ -117,6 +114,9 @@ func (s *AuthService) Register(ctx context.Context, email, password string) (*mo
 
 	user, err := s.userRepo.Create(ctx, email, string(hash), "user")
 	if err != nil {
+		if errors.Is(err, response.ErrUserAlreadyExists) {
+			return nil, "", "", errors.New("user already exists")
+		}
 		return nil, "", "", err
 	}
 

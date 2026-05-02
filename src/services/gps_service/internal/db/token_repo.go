@@ -6,7 +6,7 @@ import (
 	"gps_service/internal/models"
 	"time"
 
-	"github.com/jackc/pgx"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -19,11 +19,16 @@ func NewPostgresTokenRepo(pool *pgxpool.Pool) *PostgresTokenRepo {
 }
 
 func (r *PostgresTokenRepo) Delete(ctx context.Context, tokenHash string) error {
-	_, err := r.pool.Exec(ctx, `
-		DELETE FROM refresh_tokens
-		WHERE token_hash = $1
-	`, tokenHash)
-	return err
+	result, err := r.pool.Exec(ctx, `
+        DELETE FROM refresh_tokens WHERE token_hash = $1
+    `, tokenHash)
+	if err != nil {
+		return err
+	}
+	if result.RowsAffected() == 0 {
+		return errors.New("refresh token not found or already revoked")
+	}
+	return nil
 }
 
 func (r *PostgresTokenRepo) Save(ctx context.Context, tokenHash, userID string, expiresAt time.Time) error {

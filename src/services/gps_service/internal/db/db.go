@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/jackc/pgx"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -38,7 +38,7 @@ type Kiosk struct {
 }
 
 type SearchResult struct {
-	ID   int    `json:"id"`
+	ID   string `json:"id"`
 	Name string `json:"name"`
 	Type string `json:"type"`
 }
@@ -66,6 +66,9 @@ func GetPointsNearby(ctx context.Context, pool *pgxpool.Pool, lat, lng, radius f
 		}
 		points = append(points, p)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	if points == nil {
 		points = []Point{}
 	}
@@ -91,6 +94,9 @@ func Search(ctx context.Context, pool *pgxpool.Pool, name string) ([]SearchResul
 			return nil, err
 		}
 		results = append(results, r)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 	if results == nil {
 		results = []SearchResult{}

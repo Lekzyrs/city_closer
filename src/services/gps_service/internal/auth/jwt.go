@@ -65,13 +65,14 @@ func (jw *JWTManager) GenerateRefreshToken() (string, string, error) {
 
 func (jw *JWTManager) VerifyAccessToken(tokenStr string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-
 		if token.Method != jwt.SigningMethodHS256 {
 			return nil, fmt.Errorf("unexpected signing method")
 		}
-
 		return jw.SecretKey, nil
-	})
+	},
+		jwt.WithIssuer("city_closer"),
+		jwt.WithAudience("user"),
+	)
 
 	if err != nil {
 		return nil, err
@@ -80,9 +81,6 @@ func (jw *JWTManager) VerifyAccessToken(tokenStr string) (*Claims, error) {
 	claims, ok := token.Claims.(*Claims)
 	if !ok || !token.Valid {
 		return nil, errors.New("invalid token")
-	}
-	if claims.Issuer != "city_closer" {
-		return nil, fmt.Errorf("invalid issuer")
 	}
 	if claims.Subject == "" {
 		return nil, fmt.Errorf("invalid subject")
