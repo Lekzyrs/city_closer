@@ -52,6 +52,8 @@ func GetPointsNearby(ctx context.Context, pool *pgxpool.Pool, lat, lng, radius f
 			ST_MakePoint($1, $2)::geography,
 			$3
 		)
+		ORDER BY name
+		LIMIT 50
 	`, lng, lat, radius)
 	if err != nil {
 		return nil, err
@@ -79,8 +81,8 @@ func Search(ctx context.Context, pool *pgxpool.Pool, name string) ([]SearchResul
 	q := "%" + name + "%"
 	rows, err := pool.Query(ctx, `
 		SELECT terminal_point_id AS id, name, 'kiosk' AS type FROM terminal_points WHERE name ILIKE $1
-UNION
-SELECT point_id AS id, name, 'poi' AS type FROM points WHERE name ILIKE $1
+	UNION
+	SELECT point_id AS id, name, 'poi' AS type FROM points WHERE name ILIKE $1
 	`, q)
 	if err != nil {
 		return nil, err
