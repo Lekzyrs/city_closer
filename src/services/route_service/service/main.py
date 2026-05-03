@@ -121,7 +121,7 @@ app = FastAPI(
 )
 
 
-def build_geojson_route(ids: List[int]) -> Tuple[dict, float]:
+def build_geojson_route(ids: List[int]) -> Tuple[dict, float, int]:
     """Строит GeoJSON маршрут по массиву ID"""
     global GRAPH, COORDINATES, ROUTER
 
@@ -199,8 +199,9 @@ def build_geojson_route(ids: List[int]) -> Tuple[dict, float]:
             "waypoints": ids
         }
     }
+    estimated_time = round(total_distance / 83.3)
 
-    return geojson, total_distance
+    return geojson, total_distance, estimated_time
 
 # ==================== ЭНДПОЙНТЫ ====================
 
@@ -285,7 +286,23 @@ async def get_route(request: RoutingRequest):
         raise HTTPException(status_code=503, detail="Router not initialized")
 
     try:
-        node_ids = [find_nearest_node(wp.lat, wp.lng) for wp in request.waypoints]
+        node_ids = []
+        for wp in request.waypoints:
+            try:
+                node_id = find_nearest_node(wp.lat, wp.lng)
+            except Exception:
+                raise HTTPException(
+                    status_code=422,
+                    detail="Point not found in graph"
+                )
+
+            if node_id is None or node_id not in GRAPH:
+                raise HTTPException(
+                    status_code=422,
+                    detail="Point not found in graph"
+                )
+
+            node_ids.append(node_id)
         logger.info(f"Snapped waypoints to OSM nodes: {node_ids}")
 
         geojson, total_distance = build_geojson_route(node_ids)

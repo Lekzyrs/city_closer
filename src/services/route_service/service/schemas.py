@@ -9,7 +9,7 @@ class Waypoint(BaseModel):
 
 
 class RoutingRequest(BaseModel):
-    waypoints: List[Waypoint] = Field(..., min_items=2,
+    waypoints: List[Waypoint] = Field(..., min_length=2,
                                       description="Список точек маршрута [{lat, lng}]")
 
 
