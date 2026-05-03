@@ -336,6 +336,9 @@ func EnsureUserExists(ctx context.Context, userID, email, role string, pool *pgx
 }
 
 func NewPostgresPool(ctx context.Context, dsn string) (*pgxpool.Pool, error) {
+	startupCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
 	config, err := pgxpool.ParseConfig(dsn)
 	if err != nil {
 		return nil, err
@@ -346,12 +349,12 @@ func NewPostgresPool(ctx context.Context, dsn string) (*pgxpool.Pool, error) {
 	config.MaxConnLifetime = time.Hour
 	config.MaxConnIdleTime = 30 * time.Minute
 
-	pool, err := pgxpool.NewWithConfig(ctx, config)
+	pool, err := pgxpool.NewWithConfig(startupCtx, config)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := pool.Ping(ctx); err != nil {
+	if err := pool.Ping(startupCtx); err != nil {
 		pool.Close()
 		return nil, err
 	}
