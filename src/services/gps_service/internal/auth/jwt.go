@@ -1,21 +1,95 @@
 package auth
 
 import (
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
 	"time"
 
+	"errors"
+
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 type JWTManager struct {
-	secretKey string
+	SecretKey    []byte
+	AccessExpiry time.Duration
 }
 
-func NewJWTManager(secret string) *JWTManager {
+func NewJWTManager(secret string, accessExpiry time.Duration) *JWTManager {
 	return &JWTManager{
-		secretKey: secret,
+		SecretKey:    []byte(secret),
+		AccessExpiry: accessExpiry,
 	}
 }
 
+func (jw *JWTManager) GenerateAccessToken(userID, email, role string) (string, error) {
+	now := time.Now()
+	claim := &Claims{
+		UserID: userID,
+		Email:  email,
+		Role:   role,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ID:        uuid.NewString(),
+			Issuer:    "city_closer",
+			Subject:   userID,
+			Audience:  []string{"user"},
+			IssuedAt:  jwt.NewNumericDate(now),
+			ExpiresAt: jwt.NewNumericDate(now.Add(jw.AccessExpiry)),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
+	tokenstring, err := token.SignedString(jw.SecretKey)
+	if err != nil {
+		return "", err
+	}
+	return tokenstring, nil
+}
+
+func (jw *JWTManager) GenerateRefreshToken() (string, string, error) {
+	b := make([]byte, 32)
+
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", "", err
+	}
+
+	token := hex.EncodeToString(b)
+
+	hash := sha256.Sum256([]byte(token))
+
+	return token, hex.EncodeToString(hash[:]), nil
+}
+
+func (jw *JWTManager) VerifyAccessToken(tokenStr string) (*Claims, error) {
+	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		if token.Method != jwt.SigningMethodHS256 {
+			return nil, fmt.Errorf("unexpected signing method")
+		}
+		return jw.SecretKey, nil
+	},
+		jwt.WithIssuer("city_closer"),
+		jwt.WithAudience("user"),
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	claims, ok := token.Claims.(*Claims)
+	if !ok || !token.Valid {
+		return nil, errors.New("invalid token")
+	}
+	if claims.Subject == "" {
+		return nil, fmt.Errorf("invalid subject")
+	}
+
+	return claims, nil
+}
+
+/*
 func (jm *JWTManager) GenerateToken(userID, role string) (string, error) {
 	now := time.Now()
 	claim := &Claims{
@@ -52,3 +126,4 @@ func (jm *JWTManager) ParseToken(tokenString string) (*Claims, error) {
 	return claims, nil
 
 }
+*/

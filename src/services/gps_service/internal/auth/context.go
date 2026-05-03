@@ -5,24 +5,16 @@ import "context"
 type contextKey string
 
 const (
-	userIDKey contextKey = "user_id"
-	roleKey   contextKey = "role"
+	userIDKey      contextKey = "user_id"
+	roleKey        contextKey = "role"
+	userContextKey contextKey = "user"
 )
 
-func WithUserRole(ctx context.Context, userID, role string) context.Context {
-	ctx = context.WithValue(ctx, userIDKey, userID)
-	ctx = context.WithValue(ctx, roleKey, role)
-	return ctx
+func WithUser(ctx context.Context, claims *Claims) context.Context {
+	return context.WithValue(ctx, userContextKey, claims)
 }
 
-func GetUserFromContext(ctx context.Context) (string, bool) {
-	val := ctx.Value(userIDKey)
-	userId, ok := val.(string)
-	return userId, ok
-}
-
-func GetRoleFromContext(ctx context.Context) (string, bool) {
-	val := ctx.Value(roleKey)
-	role, ok := val.(string)
-	return role, ok
+func GetUserFromContext(ctx context.Context) (*Claims, bool) {
+	claims, ok := ctx.Value(userContextKey).(*Claims)
+	return claims, ok
 }

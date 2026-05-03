@@ -3,6 +3,7 @@ package router
 import (
 	"gps_service/internal/auth"
 	"gps_service/internal/cache"
+	"gps_service/internal/db"
 	"gps_service/internal/handlers"
 
 	"github.com/go-chi/chi/v5"
@@ -21,26 +22,37 @@ func NewRouter(
 	r.Use(chimw.Logger)
 	r.Use(chimw.Recoverer)
 
-	r.Route("/api/v1", func(r chi.Router) {
-		r.Post("/auth/login", handlers.DummyLoginHandler(jm, pool))
+	userRepo := db.NewPostgresUserRepo(pool)
+	tokenRepo := db.NewPostgresTokenRepo(pool)
+	authService := auth.NewAuthService(jm, userRepo, tokenRepo)
+
+	r.Route("/api/v1", func(api chi.Router) {
+		// auth
+		api.Route("/auth", func(ar chi.Router) {
+			ar.Post("/login", auth.LoginHandler(authService))
+			ar.Post("/register", auth.RegisterHandler(authService))
+			ar.Post("/refresh", auth.RefreshHandler(authService))
+		})
 
 		// public
-		r.Get("/points", handlers.GetPointsHandler(pool, pointsCache))
-		r.Get("/kiosks", handlers.GetKioskHandler(pool, kiosksCache))
-		r.Get("/kiosks/{id}", handlers.GetKioskByIDHandler(pool, kiosksCache))
+		api.Get("/points", handlers.GetPointsHandler(pool, pointsCache))
+		api.Get("/points/nearby", handlers.GetPointsNearbyHandler(pool))
+		api.Get("/kiosks", handlers.GetKioskHandler(pool, kiosksCache))
+		api.Get("/kiosks/{id}", handlers.GetKioskByIDHandler(pool, kiosksCache))
+		api.Get("/search", handlers.SearchHandler(pool))
 
 		// admin only
-		r.Group(func(r chi.Router) {
-			r.Use(auth.AuthMiddleware(jm))
-			r.Use(auth.RequireRole("admin"))
+		api.Group(func(admin chi.Router) {
+			admin.Use(auth.AuthMiddleware(jm))
+			admin.Use(auth.RequireRole("admin"))
 
-			r.Post("/points", handlers.CreatePointHandler(pool, pointsCache))
-			r.Put("/points/{id}", handlers.UpdatePointHandler(pool, pointsCache))
-			r.Delete("/points/{id}", handlers.DeletePointHandler(pool, pointsCache))
+			admin.Post("/points", handlers.CreatePointHandler(pool, pointsCache))
+			admin.Put("/points/{id}", handlers.UpdatePointHandler(pool, pointsCache))
+			admin.Delete("/points/{id}", handlers.DeletePointHandler(pool, pointsCache))
 
-			r.Post("/kiosks", handlers.CreateKioskHandler(pool, kiosksCache))
-			r.Put("/kiosks/{id}", handlers.UpdateKioskHandler(pool, kiosksCache))
-			r.Delete("/kiosks/{id}", handlers.DeleteKioskHandler(pool, kiosksCache))
+			admin.Post("/kiosks", handlers.CreateKioskHandler(pool, kiosksCache))
+			admin.Put("/kiosks/{id}", handlers.UpdateKioskHandler(pool, kiosksCache))
+			admin.Delete("/kiosks/{id}", handlers.DeleteKioskHandler(pool, kiosksCache))
 		})
 	})
 

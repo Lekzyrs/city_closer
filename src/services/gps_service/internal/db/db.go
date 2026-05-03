@@ -5,14 +5,14 @@ import (
 	"errors"
 	"time"
 
-	"github.com/jackc/pgx"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type Users struct {
-	UserId       string    `json:"user_id"`
+type User struct {
+	ID           string    `json:"id"`
 	Email        string    `json:"email"`
-	PasswordHash string    `json:"password_hash"`
+	PasswordHash string    `json:"-"`
 	Role         string    `json:"role"`
 	CreatedAt    time.Time `json:"created_at"`
 }
@@ -20,7 +20,7 @@ type Users struct {
 type Point struct {
 	PointId     string    `json:"point_id"`
 	Name        string    `json:"name"`
-	Description string    `json:"description"`
+	Description *string   `json:"description"`
 	Latitude    float64   `json:"latitude"`
 	Longitude   float64   `json:"longitude"`
 	TypeID      string    `json:"type_id"`
@@ -35,6 +35,75 @@ type Kiosk struct {
 	Latitude    float64   `json:"latitude" db:"latitude"`
 	Longitude   float64   `json:"longitude" db:"longitude"`
 	CreatedAt   time.Time `json:"created_at" db:"created_at"`
+}
+
+type SearchResult struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+	Type string `json:"type"`
+}
+
+func GetPointsNearby(ctx context.Context, pool *pgxpool.Pool, lat, lng, radius float64) ([]Point, error) {
+	rows, err := pool.Query(ctx, `
+		SELECT point_id, name, description, latitude, longitude, type_id, created_by, created_at
+		FROM points
+		WHERE ST_DWithin(
+			ST_MakePoint(longitude, latitude)::geography,
+			ST_MakePoint($1, $2)::geography,
+			$3
+		)
+		ORDER BY name
+		LIMIT 50
+	`, lng, lat, radius)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var points []Point
+	for rows.Next() {
+		var p Point
+		if err := rows.Scan(&p.PointId, &p.Name, &p.Description, &p.Latitude, &p.Longitude, &p.TypeID, &p.CreatedBy, &p.CreatedAt); err != nil {
+			return nil, err
+		}
+		points = append(points, p)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	if points == nil {
+		points = []Point{}
+	}
+	return points, nil
+}
+
+func Search(ctx context.Context, pool *pgxpool.Pool, name string) ([]SearchResult, error) {
+	q := "%" + name + "%"
+	rows, err := pool.Query(ctx, `
+    SELECT terminal_point_id AS id, name, 'kiosk' AS type FROM terminal_points WHERE name ILIKE $1
+    UNION
+    SELECT point_id AS id, name, 'poi' AS type FROM points WHERE name ILIKE $1
+    ORDER BY name LIMIT 50`, q)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var results []SearchResult
+	for rows.Next() {
+		var r SearchResult
+		if err := rows.Scan(&r.ID, &r.Name, &r.Type); err != nil {
+			return nil, err
+		}
+		results = append(results, r)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	if results == nil {
+		results = []SearchResult{}
+	}
+	return results, nil
 }
 
 func DeleteKiosk(ctx context.Context, pool *pgxpool.Pool, id string) error {
@@ -267,14 +336,28 @@ func EnsureUserExists(ctx context.Context, userID, email, role string, pool *pgx
 }
 
 func NewPostgresPool(ctx context.Context, dsn string) (*pgxpool.Pool, error) {
-	pool, err := pgxpool.New(ctx, dsn)
-	if err != nil {
+	startupCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
 
+	config, err := pgxpool.ParseConfig(dsn)
+	if err != nil {
 		return nil, err
 	}
-	if err := pool.Ping(ctx); err != nil {
+
+	config.MaxConns = 10
+	config.MinConns = 2
+	config.MaxConnLifetime = time.Hour
+	config.MaxConnIdleTime = 30 * time.Minute
+
+	pool, err := pgxpool.NewWithConfig(startupCtx, config)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := pool.Ping(startupCtx); err != nil {
 		pool.Close()
 		return nil, err
 	}
+
 	return pool, nil
 }

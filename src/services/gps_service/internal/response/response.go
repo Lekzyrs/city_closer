@@ -2,6 +2,7 @@ package response
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 )
 
@@ -13,6 +14,8 @@ type ErrorBody struct {
 type ErrorResponse struct {
 	Error ErrorBody `json:"error"`
 }
+
+var ErrUserAlreadyExists = errors.New("user already exists")
 
 func WriteJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json")
