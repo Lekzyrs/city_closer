@@ -25,7 +25,7 @@
 
 ## 📁 Структура проекта
 city_closer/
-├── python_backend/
+├── route_service/
 │ ├── algorithms/
 │ │ ├── base/ # Базовые алгоритмы
 │ │ │ ├── a_star.py # A* алгоритм
@@ -50,7 +50,7 @@ city_closer/
 
 ```bash
     git clone <repository-url>
-    cd city_closer/python_backend
+    cd city_closer/route_service
 ```
 
 ### 2. Создание виртуального окружения
@@ -67,7 +67,7 @@ city_closer/
 
 ### 4. Запуск сервера
 ```bash
-    cd python_backend/service
+    cd route_service/service
     uvicorn main:app --reload --port 8000
 ```
 

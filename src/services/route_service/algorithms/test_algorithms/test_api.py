@@ -5,7 +5,7 @@ import os
 project_root = r'e:\Dev\misis\MRPO_LABS\city_closer'
 sys.path.insert(0, project_root)
 sys.path.insert(0, os.path.join(project_root, 'service'))
-from python_backend.service.graph_loader import MoscowGraphLoader
+from route_service.service.graph_loader import MoscowGraphLoader
 
 BASE_URL = "http://localhost:8000"
 
