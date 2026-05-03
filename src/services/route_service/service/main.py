@@ -305,9 +305,8 @@ async def get_route(request: RoutingRequest):
             node_ids.append(node_id)
         logger.info(f"Snapped waypoints to OSM nodes: {node_ids}")
 
-        geojson, total_distance = build_geojson_route(node_ids)
+        geojson, total_distance, estimated_time = build_geojson_route(node_ids)
 
-        estimated_time = round(total_distance / 83.3)  # 5 km/h in m/min
         geojson['properties']['estimated_time_minutes'] = estimated_time
         geojson['properties']['processing_time_ms'] = round(
             (time.time() - start_time) * 1000, 2)

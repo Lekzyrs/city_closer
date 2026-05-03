@@ -494,7 +494,7 @@ class CHBenchmark:
 
 
 if __name__ == "__main__":
-    from route_service.graph_loader import MoscowGraphLoader
+    from route_service.service.graph_loader import MoscowGraphLoader
 
     loader = MoscowGraphLoader(network_type='drive')
     graph = loader.load_graph(use_cache=True)

@@ -50,7 +50,7 @@ city_closer/
 
 ```bash
     git clone <repository-url>
-    cd city_closer/route_service
+    cd src/services/route_service
 ```
 
 ### 2. Создание виртуального окружения
@@ -67,7 +67,7 @@ city_closer/
 
 ### 4. Запуск сервера
 ```bash
-    cd route_service/service
+    cd service
     uvicorn main:app --reload --port 8000
 ```
 
