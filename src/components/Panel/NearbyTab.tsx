@@ -29,6 +29,11 @@ const FILTERS: { value: FilterCategory; label: string }[] = [
  */
 function PoiThumb({ src, iconSvg }: { src?: string; iconSvg: string }) {
   const [failed, setFailed] = useState(false)
+  // Новый src (фон-обогащение / рефреш данных) — сбрасываем флаг,
+  // иначе залипший failed навсегда подменяет валидную картинку иконкой.
+  useEffect(() => {
+    setFailed(false)
+  }, [src])
   if (src && !failed) {
     return (
       <img
